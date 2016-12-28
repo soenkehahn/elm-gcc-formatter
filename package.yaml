@@ -1,0 +1,22 @@
+name: elm-gcc-formatter
+version: "0.1"
+
+dependencies:
+  - base
+  - aeson
+  - string-conversions
+
+tests:
+  spec:
+    main: Spec.hs
+    source-dirs:
+      - test
+      - src
+    dependencies:
+      - hspec
+
+executables:
+  elm-gcc-formatter:
+    main: Main.hs
+    source-dirs:
+      - src
