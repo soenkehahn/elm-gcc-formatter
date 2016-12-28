@@ -4,15 +4,26 @@
 module Format where
 
 import GHC.Generics
+import Control.Applicative
+import Control.Arrow
 import Data.List
 import System.Exit
 import Data.Aeson
 import Data.String.Conversions
 
 format :: String -> Either String String
-format input = case eitherDecode' (cs input) of
-  Right (messages :: [ElmMessage]) -> Right $ intercalate "\n\n" $ map formatMessage messages
+format input = case parse input of
+  Right messages -> formatMessages messages
   Left err -> Left err
+
+parse :: String -> Either String [ElmMessage]
+parse input =
+  eitherDecode' (cs input) <|>
+  eitherDecode' (cs (stripLastLine input))
+
+stripLastLine :: String -> String
+stripLastLine =
+  lines >>> init >>> unlines >>> (++ "\n")
 
 data ElmMessage
   = ElmMessage {
@@ -25,6 +36,9 @@ data ElmMessage
   deriving (Generic)
 
 instance FromJSON ElmMessage
+
+formatMessages messages =
+  Right $ intercalate "\n\n" $ map formatMessage messages
 
 formatMessage :: ElmMessage -> String
 formatMessage message =
