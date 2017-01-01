@@ -17,29 +17,34 @@ spec = do
           []
     it "converts elm's json output to gcc format" $ do
       errorText <- readFile "test/elm-error.txt"
-      let Right (output, _) = format Nothing errorText
+      let (output, _) = format Nothing errorText
       output `shouldBe` expected
 
     it "tries to parse the output without the last line" $ do
       file <- readFile "test/elm-error.txt"
       let errorText = file ++ "\nsuccessful compilation, bla bla\n"
-      let Right (output, _) = format Nothing errorText
+      let (output, _) = format Nothing errorText
       output `shouldBe` expected
+
+    context "when input is not valid json" $ do
+      it "pipes input through" $ do
+        let errorText = "invalid json\n"
+        let (output, _) = format Nothing errorText
+        output `shouldBe` errorText
 
     it "allows to specify a parent directory for found files" $ do
       errorText <- readFile "test/elm-error.txt"
-      let Right (output, _) = format (Just "parent") errorText
+      let (output, _) = format (Just "parent") errorText
       head (lines output) `shouldBe`
         "./parent/src/Levels.elm:20:12: NAMING ERROR"
 
     describe "exit codes" $ do
       it "returns a zero exit code if there's no errors" $ do
         let errorText = "[]"
-        let Right (output, exitCode) =
-              format (Just "parent") errorText
+        let (_, exitCode) = format (Just "parent") errorText
         exitCode `shouldBe` ExitSuccess
 
       it "returns with a non-zero exit code if there's errors" $ do
         errorText <- readFile "test/elm-error.txt"
-        let Right (output, exitCode) = format (Just "parent") errorText
+        let (_, exitCode) = format (Just "parent") errorText
         exitCode `shouldBe` ExitFailure 1

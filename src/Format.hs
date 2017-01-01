@@ -12,7 +12,7 @@ import Data.Aeson
 import Data.String.Conversions
 import System.FilePath
 
-format :: Maybe FilePath -> String -> Either String (String, ExitCode)
+format :: Maybe FilePath -> String -> (String, ExitCode)
 format mParent input = case parse input of
   Right messages ->
     let outMessages = formatMessages
@@ -20,8 +20,8 @@ format mParent input = case parse input of
         exitCode = if null messages
           then ExitSuccess
           else ExitFailure 1
-    in Right (outMessages, exitCode)
-  Left err -> Left err
+    in (outMessages, exitCode)
+  Left err -> (input, ExitSuccess)
 
 parse :: String -> Either String [ElmMessage]
 parse input =
