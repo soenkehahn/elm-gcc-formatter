@@ -12,10 +12,15 @@ import Data.Aeson
 import Data.String.Conversions
 import System.FilePath
 
-format :: Maybe FilePath -> String -> Either String String
+format :: Maybe FilePath -> String -> Either String (String, ExitCode)
 format mParent input = case parse input of
-  Right messages -> formatMessages
-    $ map (addParent mParent) messages
+  Right messages ->
+    let outMessages = formatMessages
+          $ map (addParent mParent) messages
+        exitCode = if null messages
+          then ExitSuccess
+          else ExitFailure 1
+    in Right (outMessages, exitCode)
   Left err -> Left err
 
 parse :: String -> Either String [ElmMessage]
@@ -49,8 +54,9 @@ addParent mParent message = case mParent of
   }
   Nothing -> message
 
+formatMessages :: [ElmMessage] -> String
 formatMessages messages =
-  Right $ intercalate "\n\n" $ map formatMessage messages
+  intercalate "\n\n" $ map formatMessage messages
 
 formatMessage :: ElmMessage -> String
 formatMessage message =

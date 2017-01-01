@@ -19,4 +19,7 @@ main = withCli $ \ options -> do
   input <- getContents
   case format (parentDir options) input of
     Left err -> die err
-    Right output -> putStr output
+    Right (output, exitCode) -> do
+      putStr output
+      exitWith exitCode
+      return ()
