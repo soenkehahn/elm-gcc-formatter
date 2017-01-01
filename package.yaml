@@ -5,6 +5,8 @@ dependencies:
   - base
   - aeson
   - string-conversions
+  - filepath
+  - getopt-generics
 
 tests:
   spec:

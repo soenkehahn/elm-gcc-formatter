@@ -1,12 +1,22 @@
+{-# LANGUAGE DeriveGeneric #-}
 
 module Main where
 
 import Format
 import System.Exit
+import WithCli
+
+data Options
+  = Options {
+    parentDir :: Maybe FilePath
+  }
+  deriving (Generic)
+
+instance HasArguments Options
 
 main :: IO ()
-main = do
+main = withCli $ \ options -> do
   input <- getContents
-  case format input of
+  case format (parentDir options) input of
     Left err -> die err
     Right output -> putStr output

@@ -10,10 +10,12 @@ import Data.List
 import System.Exit
 import Data.Aeson
 import Data.String.Conversions
+import System.FilePath
 
-format :: String -> Either String String
-format input = case parse input of
-  Right messages -> formatMessages messages
+format :: Maybe FilePath -> String -> Either String String
+format mParent input = case parse input of
+  Right messages -> formatMessages
+    $ map (addParent mParent) messages
   Left err -> Left err
 
 parse :: String -> Either String [ElmMessage]
@@ -36,6 +38,16 @@ data ElmMessage
   deriving (Generic)
 
 instance FromJSON ElmMessage
+
+addParent :: Maybe FilePath -> ElmMessage -> ElmMessage
+addParent mParent message = case mParent of
+  Just parent -> message{
+    file =
+      ("." </>) $
+      normalise $
+        parent </> file message
+  }
+  Nothing -> message
 
 formatMessages messages =
   Right $ intercalate "\n\n" $ map formatMessage messages
