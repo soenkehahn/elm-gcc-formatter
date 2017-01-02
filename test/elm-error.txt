@@ -1,1 +1,1 @@
-[{"tag":"NAMING ERROR","overview":"Cannot find variable `Dict.fromLst`.","subregion":null,"suggestions":["fromList"],"details":"`Dict` does not expose `fromLst`. Maybe you want one of the following?\n\n    Dict.fromList","region":{"start":{"line":20,"column":12},"end":{"line":20,"column":24}},"type":"error","file":"./src/Levels.elm"}]
+[{"tag":"NAMING ERROR","overview":"overview text 1","subregion":null,"suggestions":["fromList"],"details":"details text 1","region":{"start":{"line":20,"column":12},"end":{"line":20,"column":24}},"type":"error","file":"./src/Levels.elm"}]

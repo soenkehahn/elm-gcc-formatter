@@ -13,24 +13,25 @@ import Data.String.Conversions
 import System.FilePath
 
 format :: Maybe FilePath -> String -> (String, ExitCode)
-format mParent input = case parse input of
-  Right messages ->
-    let outMessages = formatMessages
-          $ map (addParent mParent) messages
-        exitCode = if null messages
-          then ExitSuccess
-          else ExitFailure 1
-    in (outMessages, exitCode)
-  Left err -> (input, ExitSuccess)
+format mParent input =
+  first (intercalate "\n" >>> (++ "\n")) $
+  foldl' inner ([], ExitSuccess) (map parse (lines input))
+  where
+    inner acc parsed = case parsed of
+      Right messages ->
+        let outMessages = formatMessages
+              $ map (addParent mParent) messages
+            exitCode = if null messages
+              then snd acc
+              else ExitFailure 1
+        in (fst acc ++ [outMessages], exitCode)
+      Left err -> (fst acc ++ [err], snd acc)
 
 parse :: String -> Either String [ElmMessage]
 parse input =
-  eitherDecode' (cs input) <|>
-  eitherDecode' (cs (stripLastLine input))
-
-stripLastLine :: String -> String
-stripLastLine =
-  lines >>> init >>> unlines >>> (++ "\n")
+  case eitherDecode' (cs input) of
+    Left _ -> Left input
+    Right x -> Right x
 
 data ElmMessage
   = ElmMessage {
@@ -66,7 +67,7 @@ formatMessage message =
   tag message ++ "\n" ++
   "  " ++ overview message ++ "\n" ++
   "\n" ++
-  "  " ++ details message ++ "\n"
+  "  " ++ details message
 
 data Region
   = Region {

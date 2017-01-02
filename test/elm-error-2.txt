@@ -1,0 +1,1 @@
+[{"tag":"TYPE MISMATCH","overview":"overview text 2","subregion":{"start":{"line":25,"column":40},"end":{"line":25,"column":50}},"details":"details text 2","region":{"start":{"line":24,"column":33},"end":{"line":25,"column":50}},"type":"error","file":"././LevelsTest.elm"}]
