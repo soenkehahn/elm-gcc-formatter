@@ -10,13 +10,17 @@ spec :: Spec
 spec = do
   describe "format" $ do
     let expected = unlines $
+          "" :
           "./src/Levels.elm:20:12: NAMING ERROR" :
+          "" :
           "  overview text 1" :
           "" :
           "  details text 1" :
           []
         expected2 = unlines $
+          "" :
           "././LevelsTest.elm:24:33: TYPE MISMATCH" :
+          "" :
           "  overview text 2" :
           "" :
           "  details text 2" :
@@ -51,7 +55,7 @@ spec = do
     it "allows to specify a parent directory for found files" $ do
       errorText <- readFile "test/elm-error.txt"
       let (output, _) = format (Just "parent") errorText
-      head (lines output) `shouldBe`
+      (lines output !! 1) `shouldBe`
         "./parent/src/Levels.elm:20:12: NAMING ERROR"
 
     describe "exit codes" $ do

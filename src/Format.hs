@@ -61,10 +61,12 @@ formatMessages messages =
 
 formatMessage :: ElmMessage -> String
 formatMessage message =
+  "\n" ++
   file message ++ ":" ++
   show (line (start (region message))) ++ ":" ++
   show (column (start (region message))) ++ ": " ++
   tag message ++ "\n" ++
+  "\n" ++
   "  " ++ overview message ++ "\n" ++
   "\n" ++
   "  " ++ details message
